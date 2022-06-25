@@ -1,9 +1,15 @@
 package triple.pointApi.global.entity;
 
 
+import lombok.*;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class History {
 
     @Id
@@ -15,11 +21,10 @@ public class History {
     private int prePoint;
 
     @Column(name = "NEW_VALUE")
-    private int newVAlue;
+    private int newValue;
 
     @Column(name = "RESULT_POINT")
     private int resultPoint;
-
 
     // 연관관계 매핑
     @ManyToOne
@@ -27,4 +32,8 @@ public class History {
     private User user;
 
 
+    // 연관관계 편의 메서드
+    public void setUser(User user){
+        this.user = user;
+    }
 }
