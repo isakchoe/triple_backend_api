@@ -3,24 +3,27 @@ package triple.pointApi.domain.review.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import triple.pointApi.domain.place.repository.PlaceRepository;
+import triple.pointApi.domain.history.service.HistoryService;
+import triple.pointApi.domain.place.service.PlaceService;
 import triple.pointApi.domain.review.dto.ReviewDto;
 import triple.pointApi.domain.review.repository.ReviewRepositroy;
-import triple.pointApi.domain.user.repository.UserRepository;
 import triple.pointApi.domain.user.service.UserService;
+import triple.pointApi.global.entity.History;
 import triple.pointApi.global.entity.Place;
 import triple.pointApi.global.entity.Review;
 import triple.pointApi.global.entity.User;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class ReviewService {
 
     private final ReviewRepositroy reviewRepository;
-    private final UserRepository userRepository;
-    private final PlaceRepository placeRepository;
 
     private final UserService userService;
+    private final PlaceService placeService;
+    private final HistoryService historyService;
 
 
     public void doReviewEvent(ReviewDto reviewDto){
@@ -40,6 +43,10 @@ public class ReviewService {
     private void createReview(ReviewDto reviewDto){
         String contet = reviewDto.getContent();
         Long userId = reviewDto.getUserId();
+        Long placeId = reviewDto.getPlaceId();
+
+        User user = userService.getUser(userId);
+        Place place = placeService.getPlace(placeId);
 
         // 포인트 계산 함수
         int point = calculateReviewPoint(reviewDto);
@@ -54,39 +61,34 @@ public class ReviewService {
                 .point(point)
                 .build();
 
-        setUser(review, reviewDto);
-        setPlace(review, reviewDto);
-
-        reviewRepository.save(review);
-    }
-
-    private void setUser(Review review, ReviewDto reviewDto){
-        Long userId = reviewDto.getUserId();
-        User user = userRepository.findById(userId).
-                orElseThrow(()-> new NullPointerException());
-
         review.setUser(user);
-    }
-
-    private void setPlace(Review review, ReviewDto reviewDto){
-        Long placeId = reviewDto.getPlaceId();
-        Place place = placeRepository.findById(placeId).
-                orElseThrow(() -> new NullPointerException());
         review.setPlace(place);
+        reviewRepository.save(review);
+
+        //history build
+        History history = History.builder()
+                        .prePoint(0)
+                        .newValue(point)
+                        .resultPoint(point)
+                        .build();
+
+        historyService.saveHistory(history,user);
     }
 
 
-    private int calculateReviewPoint(ReviewDto reviewDto){
+    public int calculateReviewPoint(ReviewDto reviewDto){
         String content = reviewDto.getContent();
         String[] attachedPhotoIds = reviewDto.getAttachedPhotoIds();
         Long placeId = reviewDto.getPlaceId();
+        // 네이밍?
+        Place place = placeService.getPlace(placeId);
         // null 이 아닌, 빈 배열이 나온다.
-        Review[] reviews = reviewRepository.findAllByPlaceId(placeId);
+        List<Review> reviews = reviewRepository.findAllByPlace(place);
         int total = 0;
 
         if (content.length() >=1) total+=1;
         if(attachedPhotoIds.length >= 1) total +=1;
-        if (reviews.length == 0) total += 1;
+        if (reviews.size() == 0) total += 1;
 
         return total;
     }
