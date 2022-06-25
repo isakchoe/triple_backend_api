@@ -9,7 +9,7 @@ public class Place {
     @Id
     @Column(name = "PLACE_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String placeId;
+    private Long placeId;
 
     @Column(name = "PLACE_NAME")
     private String placeName;

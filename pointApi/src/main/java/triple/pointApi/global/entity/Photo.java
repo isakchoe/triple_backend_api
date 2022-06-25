@@ -8,7 +8,7 @@ public class Photo {
     @Id
     @Column(name = "PHOTO_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String photoId;
+    private Long photoId;
 
     // 연관관계 매핑
     @ManyToOne
