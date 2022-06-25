@@ -26,4 +26,7 @@ public class User {
     @Column(name = "POINT")
     private int point;
 
+    public void chagePoint(int point){
+        this.point = point;
+    }
 }
