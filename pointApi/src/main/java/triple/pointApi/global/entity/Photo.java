@@ -1,6 +1,7 @@
 package triple.pointApi.global.entity;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 public class Photo {
@@ -8,7 +9,7 @@ public class Photo {
     @Id
     @Column(name = "PHOTO_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long photoId;
+    private UUID photoId;
 
     // 연관관계 매핑
     @ManyToOne(fetch = FetchType.LAZY)

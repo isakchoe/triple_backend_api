@@ -42,10 +42,10 @@ public class ReviewService {
 
 
     public void createReview(ReviewDto reviewDto){
-        String contet = reviewDto.getContent();
+        String content = reviewDto.getContent();
         UUID userId = reviewDto.getUserId();
-        System.out.println(userId);
-        Long placeId = reviewDto.getPlaceId();
+        UUID placeId = reviewDto.getPlaceId();
+        UUID reviewId = reviewDto.getReviewId();
 
         User user = userService.getUser(userId);
         Place place = placeService.getPlace(placeId);
@@ -58,8 +58,8 @@ public class ReviewService {
 
         // review entity 빌드
         Review review = Review.builder()
-                .reviewId(reviewDto.getReviewId())
-                .content(contet)
+                .reviewId(reviewId)
+                .content(content)
                 .point(point)
                 .build();
 
@@ -78,11 +78,12 @@ public class ReviewService {
     }
 
 
-    public int calculateReviewPoint(ReviewDto reviewDto){
+    public int
+    calculateReviewPoint(ReviewDto reviewDto){
         String content = reviewDto.getContent();
         String[] attachedPhotoIds = reviewDto.getAttachedPhotoIds();
-        Long placeId = reviewDto.getPlaceId();
-        Long reviewId = reviewDto.getReviewId();
+        UUID placeId = reviewDto.getPlaceId();
+        UUID reviewId = reviewDto.getReviewId();
 
         // 네이밍?
         Place place = placeService.getPlace(placeId);
@@ -106,24 +107,27 @@ public class ReviewService {
 
 
     public void deleteReview(ReviewDto reviewDto){
-        Long reviewId = reviewDto.getReviewId();
+//        UUID reviewId = reviewDto.getReviewId();
         UUID userId = reviewDto.getUserId();
 
-        Review review = reviewRepository.findById(reviewId).
-                orElseThrow(()->new NullPointerException());
+        int reviewPoint = - calculateReviewPoint(reviewDto);
+
+
+//        Review review = reviewRepository.findById(reviewId).
+//                orElseThrow(()->new NullPointerException());
 
         // review find by user,plae id
 
-        int point = -review.getPoint();
+//        int point = -review.getPoint();
 
-        userService.addPoint(userId, point);
-        reviewRepository.delete(review);
+        userService.addPoint(userId, reviewPoint);
+//        reviewRepository.delete(review);
     }
 
 
     public void updateReview(ReviewDto reviewDto){
 
-        Long reviewId = reviewDto.getReviewId();
+        UUID reviewId = reviewDto.getReviewId();
         UUID userId = reviewDto.getUserId();
         int newPoint = calculateReviewPoint(reviewDto);
 

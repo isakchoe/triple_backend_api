@@ -32,20 +32,22 @@ public class ReviewTest {
     @Autowired
     private PlaceRepository placeRepository;
 
-
-
     @Autowired
     private UserRepository userRepository;
 
 
     // dto -- entity 아이디를 일치시켜야 한다.
-    Long id = new Long(1);
     String[] photoIds = {"1" ,"2"};
+    String[] emptyPhotoIds = {};
 
     User user = getUser();
 
     ReviewDto reviewCreateDto;
     ReviewDto reviewModDto;
+
+    UUID reviewId = UUID.randomUUID();
+    UUID placeId;
+    UUID userId;
 
 
     @BeforeEach
@@ -53,21 +55,24 @@ public class ReviewTest {
         Place place = Place.builder()
                 .placeName("연남동")
                 .build();
-
+        // save
         placeRepository.save(place);
         userRepository.save(user);
 
-        UUID uid = user.getUserId();
+        // id 값 가져오기
+        userId = user.getUserId();
+        placeId =  place.getPlaceId();
 
-        reviewCreateDto =  getReviewDto(id, uid, "ADD");
-        reviewModDto = getReviewDto(id, uid, "MOD");
+        // 테스트 dto 2개 생성
+        reviewCreateDto =  getReviewDto( "ADD", photoIds);
+        reviewModDto = getReviewDto( "MOD", emptyPhotoIds);
     }
 
-    public ReviewDto getReviewDto(Long id, UUID uid, String action){
+    public ReviewDto getReviewDto(String action, String[] photoIds){
         ReviewDto reviewDto = ReviewDto.builder()
-                .reviewId(id)
-                .placeId(id)
-                .userId(uid)
+                .reviewId(reviewId)
+                .placeId(placeId)
+                .userId(userId)
                 .action(action)
                 .content("좋아요")
                 .type("REVIEW")
@@ -134,7 +139,8 @@ public class ReviewTest {
         int newPoint = user.getPoint();
 
         //then
-        assertThat(newPoint).isEqualTo(prePoint);
+        int diff = Math.abs(prePoint - newPoint);
+        assertThat(diff).isEqualTo(1);
     }
 
 

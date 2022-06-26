@@ -14,11 +14,11 @@ import java.util.UUID;
 @Builder
 public class ReviewDto {
 
-    private Long reviewId;
+    private UUID reviewId;
     private String type;
     private String action;
     private String content;
     private String[] attachedPhotoIds;
     private UUID userId;
-    private Long placeId;
+    private UUID placeId;
 }

@@ -1,8 +1,10 @@
 package triple.pointApi.global.entity;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 
 @Entity
@@ -13,9 +15,8 @@ import javax.persistence.*;
 public class Review {
 
     @Id
-    @Column(name = "REVIEW_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewId;
+    @Column(columnDefinition = "BINARY(16)", name = "REVIEW_ID")
+    private UUID reviewId;
 
     @Column(name = "CONTENT")
     private String content;
