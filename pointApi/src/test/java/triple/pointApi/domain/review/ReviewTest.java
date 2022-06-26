@@ -17,6 +17,7 @@ import triple.pointApi.global.entity.User;
 
 
 import javax.transaction.Transactional;
+import java.util.UUID;
 
 @SpringBootTest
 @Transactional
@@ -31,6 +32,8 @@ public class ReviewTest {
     @Autowired
     private PlaceRepository placeRepository;
 
+
+
     @Autowired
     private UserRepository userRepository;
 
@@ -38,24 +41,11 @@ public class ReviewTest {
     // dto -- entity 아이디를 일치시켜야 한다.
     Long id = new Long(1);
     String[] photoIds = {"1" ,"2"};
+
     User user = getUser();
-    ReviewDto reviewCreateDto = getReviewDto(id, "ADD");
-    ReviewDto reviewModDto = getReviewDto(id,  "MOD");
 
-
-    public ReviewDto getReviewDto(Long id, String action){
-        ReviewDto reviewDto = ReviewDto.builder()
-                .reviewId(id)
-                .placeId(id)
-                .userId(id)
-                .action(action)
-                .content("좋아요")
-                .type("REVIEW")
-                .attachedPhotoIds(photoIds)
-                .build();
-        return reviewDto;
-    }
-
+    ReviewDto reviewCreateDto;
+    ReviewDto reviewModDto;
 
 
     @BeforeEach
@@ -66,6 +56,24 @@ public class ReviewTest {
 
         placeRepository.save(place);
         userRepository.save(user);
+
+        UUID uid = user.getUserId();
+
+        reviewCreateDto =  getReviewDto(id, uid, "ADD");
+        reviewModDto = getReviewDto(id, uid, "MOD");
+    }
+
+    public ReviewDto getReviewDto(Long id, UUID uid, String action){
+        ReviewDto reviewDto = ReviewDto.builder()
+                .reviewId(id)
+                .placeId(id)
+                .userId(uid)
+                .action(action)
+                .content("좋아요")
+                .type("REVIEW")
+                .attachedPhotoIds(photoIds)
+                .build();
+        return reviewDto;
     }
 
     public User getUser(){

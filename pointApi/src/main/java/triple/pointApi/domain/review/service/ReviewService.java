@@ -14,6 +14,7 @@ import triple.pointApi.global.entity.Review;
 import triple.pointApi.global.entity.User;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -42,7 +43,8 @@ public class ReviewService {
 
     public void createReview(ReviewDto reviewDto){
         String contet = reviewDto.getContent();
-        Long userId = reviewDto.getUserId();
+        UUID userId = reviewDto.getUserId();
+        System.out.println(userId);
         Long placeId = reviewDto.getPlaceId();
 
         User user = userService.getUser(userId);
@@ -105,7 +107,7 @@ public class ReviewService {
 
     public void deleteReview(ReviewDto reviewDto){
         Long reviewId = reviewDto.getReviewId();
-        Long userId = reviewDto.getUserId();
+        UUID userId = reviewDto.getUserId();
 
         Review review = reviewRepository.findById(reviewId).
                 orElseThrow(()->new NullPointerException());
@@ -122,7 +124,7 @@ public class ReviewService {
     public void updateReview(ReviewDto reviewDto){
 
         Long reviewId = reviewDto.getReviewId();
-        Long userId = reviewDto.getUserId();
+        UUID userId = reviewDto.getUserId();
         int newPoint = calculateReviewPoint(reviewDto);
 
         Review review = reviewRepository.findById(reviewId).

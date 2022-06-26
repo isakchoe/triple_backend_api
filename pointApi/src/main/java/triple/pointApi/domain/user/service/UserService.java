@@ -7,6 +7,8 @@ import triple.pointApi.domain.user.dto.UserPointDto;
 import triple.pointApi.domain.user.repository.UserRepository;
 import triple.pointApi.global.entity.User;
 
+import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -15,7 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
 
 
-    public User getUser(Long userId){
+    public User getUser(UUID userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NullPointerException());
         return user;
@@ -29,7 +31,7 @@ public class UserService {
     }
 
 
-    public void addPoint(Long userId, int point){
+    public void addPoint(UUID userId, int point){
         User user = getUser(userId);
         int prePoint = user.getPoint();
         int newPoint = prePoint + point;
