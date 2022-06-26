@@ -40,7 +40,7 @@ public class ReviewService {
     }
 
 
-    private void createReview(ReviewDto reviewDto){
+    public void createReview(ReviewDto reviewDto){
         String contet = reviewDto.getContent();
         Long userId = reviewDto.getUserId();
         Long placeId = reviewDto.getPlaceId();
@@ -97,7 +97,6 @@ public class ReviewService {
 
 
     private void deleteReview(ReviewDto reviewDto){
-
         Long reviewId = reviewDto.getReviewId();
         Long userId = reviewDto.getUserId();
 
