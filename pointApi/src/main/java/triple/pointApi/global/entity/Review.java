@@ -24,11 +24,11 @@ public class Review {
     private int point;
 
     // 연관관계 매핑
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PLACE_ID")
     private Place place;
 

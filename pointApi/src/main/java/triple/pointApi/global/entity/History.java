@@ -27,7 +27,7 @@ public class History {
     private int resultPoint;
 
     // 연관관계 매핑
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
 
