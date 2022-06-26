@@ -38,23 +38,31 @@ public class ReviewTest {
     // dto -- entity 아이디를 일치시켜야 한다.
     Long id = new Long(1);
     String[] photoIds = {"1" ,"2"};
+    User user = getUser();
+    ReviewDto reviewCreateDto = getReviewDto(id, "ADD");
+    ReviewDto reviewModDto = getReviewDto(id,  "MOD");
 
-    ReviewDto reviewDto = ReviewDto.builder()
-            .reviewId(id)
-            .placeId(id)
-            .userId(id)
-            .action("ADD")
-            .content("좋아요")
-            .type("REVIEW")
-            .attachedPhotoIds(photoIds)
-            .build();
+
+    public ReviewDto getReviewDto(Long id, String action){
+        ReviewDto reviewDto = ReviewDto.builder()
+                .reviewId(id)
+                .placeId(id)
+                .userId(id)
+                .action(action)
+                .content("좋아요")
+                .type("REVIEW")
+                .attachedPhotoIds(photoIds)
+                .build();
+        return reviewDto;
+    }
+
+
 
     @BeforeEach
     public void setEntity(){
         Place place = Place.builder()
                 .placeName("연남동")
                 .build();
-        User user = getUser();
 
         placeRepository.save(place);
         userRepository.save(user);
@@ -73,17 +81,52 @@ public class ReviewTest {
 
     @Test
     public void calculatePointTest(){
-        int point = reviewService.calculateReviewPoint(reviewDto);
+        int point = reviewService.calculateReviewPoint(reviewCreateDto);
         assertThat(point).isEqualTo(3);
     }
 
 
     @Test
     public void createReviewTest(){
-        reviewService.createReview(reviewDto);
-        Review review = reviewRepositroy.findById(reviewDto.getReviewId())
+        reviewService.createReview(reviewCreateDto);
+        Review review = reviewRepositroy.findById(reviewCreateDto.getReviewId())
                 .orElseThrow(()-> new NullPointerException());
-        assertThat(review.getReviewId()).isEqualTo(reviewDto.getReviewId());
+
+        int point = user.getPoint();
+
+        assertThat(point).isEqualTo(3);
+        assertThat(review.getReviewId()).isEqualTo(reviewCreateDto.getReviewId());
+    }
+
+
+    @Test
+    public void deleteReviewTest(){
+        //given
+        int review_point = reviewService.calculateReviewPoint(reviewCreateDto);
+        reviewService.createReview(reviewCreateDto);
+        int prePoint = user.getPoint();
+
+        // when
+        reviewService.deleteReview(reviewCreateDto);
+        int newPoint = user.getPoint();
+
+        // then
+        int diff = prePoint - newPoint;
+        assertThat(diff).isEqualTo(review_point);
+    }
+
+    @Test
+    public void updateReviewTest(){
+        //given
+        reviewService.createReview(reviewCreateDto);
+        int prePoint = user.getPoint();
+
+        //when
+        reviewService.updateReview(reviewModDto);
+        int newPoint = user.getPoint();
+
+        //then
+        assertThat(newPoint).isEqualTo(prePoint);
     }
 
 

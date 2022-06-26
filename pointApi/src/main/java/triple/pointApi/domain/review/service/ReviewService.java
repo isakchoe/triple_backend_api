@@ -80,6 +80,8 @@ public class ReviewService {
         String content = reviewDto.getContent();
         String[] attachedPhotoIds = reviewDto.getAttachedPhotoIds();
         Long placeId = reviewDto.getPlaceId();
+        Long reviewId = reviewDto.getReviewId();
+
         // 네이밍?
         Place place = placeService.getPlace(placeId);
         // null 이 아닌, 빈 배열이 나온다.
@@ -89,6 +91,11 @@ public class ReviewService {
         if (content.length() >=1) total+=1;
         if(attachedPhotoIds.length >= 1) total +=1;
         if (reviews.size() == 0) total += 1;
+        if (reviews.size() == 1){
+            if(reviews.get(0).getReviewId().equals(reviewId)){
+                total +=1;
+            }
+        }
 
         return total;
     }
@@ -96,7 +103,7 @@ public class ReviewService {
 
 
 
-    private void deleteReview(ReviewDto reviewDto){
+    public void deleteReview(ReviewDto reviewDto){
         Long reviewId = reviewDto.getReviewId();
         Long userId = reviewDto.getUserId();
 
@@ -112,7 +119,7 @@ public class ReviewService {
     }
 
 
-    private void updateReview(ReviewDto reviewDto){
+    public void updateReview(ReviewDto reviewDto){
 
         Long reviewId = reviewDto.getReviewId();
         Long userId = reviewDto.getUserId();
