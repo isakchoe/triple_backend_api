@@ -85,7 +85,6 @@ public class ReviewService {
         UUID placeId = reviewDto.getPlaceId();
         UUID reviewId = reviewDto.getReviewId();
 
-        // 네이밍?
         Place place = placeService.getPlace(placeId);
         // null 이 아닌, 빈 배열이 나온다.
         List<Review> reviews = reviewRepository.findAllByPlace(place);
@@ -99,7 +98,6 @@ public class ReviewService {
                 total +=1;
             }
         }
-
         return total;
     }
 
@@ -107,21 +105,29 @@ public class ReviewService {
 
 
     public void deleteReview(ReviewDto reviewDto){
-//        UUID reviewId = reviewDto.getReviewId();
+        UUID reviewId = reviewDto.getReviewId();
         UUID userId = reviewDto.getUserId();
 
-        int reviewPoint = - calculateReviewPoint(reviewDto);
+        Review review = reviewRepository.findById(reviewId).
+                orElseThrow(()->new NullPointerException());
+
+        User user = userService.getUser(userId);
+
+        int point = -review.getPoint();
+
+        userService.addPoint(userId, point);
+        reviewRepository.delete(review);
 
 
-//        Review review = reviewRepository.findById(reviewId).
-//                orElseThrow(()->new NullPointerException());
+        //history build
+        History history = History.builder()
+                .prePoint(review.getPoint())
+                .newValue(point)
+                .resultPoint(review.getPoint() + point)
+                .build();
 
-        // review find by user,plae id
+        historyService.saveHistory(history,user);
 
-//        int point = -review.getPoint();
-
-        userService.addPoint(userId, reviewPoint);
-//        reviewRepository.delete(review);
     }
 
 
@@ -134,6 +140,8 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId).
                 orElseThrow(()->new NullPointerException());
 
+        User user = userService.getUser(userId);
+
         // review find by user,plae id
 
         int prePoint = review.getPoint();
@@ -142,6 +150,17 @@ public class ReviewService {
         review.chagnePoint(newPoint);
         userService.addPoint(userId, diffPoint);
         reviewRepository.save(review);
+
+        //history build
+        History history = History.builder()
+                .prePoint(review.getPoint())
+                .newValue(diffPoint)
+                .resultPoint(review.getPoint() + diffPoint)
+                .build();
+
+        historyService.saveHistory(history,user);
+
+
     }
 
 }

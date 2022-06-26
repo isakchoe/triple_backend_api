@@ -17,12 +17,11 @@ public class ReviewController {
 
     //post
     @PostMapping("/review")
-    private void ReviewEvent(@RequestBody ReviewDto reviewDto){
-
-        String action = reviewDto.getAction();
-
+    private String ReviewEvent(@RequestBody ReviewDto reviewDto){
         reviewService.doReviewEvent(reviewDto);
+        String success = "{success : ok}";
 
+        return success;
     }
 
 
